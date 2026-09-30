@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+
+    <div class="container py-5">
+        <h1 class="text-center mb-4"><i class="fa-solid fa-list-check text-primary"></i> Gerenciador de Tarefas</h1>
+
+        <!-- Formulário de Cadastro -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Nova Tarefa</h5>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título da Tarefa</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required placeholder="Ex: Estudar Flask">
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição (Opcional)</label>
+                        <textarea class="form-control" id="descricao" name="descricao" rows="2" placeholder="Ex: Criar rotas, banco de dados e templates"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Cadastrar Tarefa</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de Tarefas -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Tarefas Cadastradas</h5>
+                
+                {% if tarefas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Descrição</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tarefa in tarefas %}
+                                <tr>
+                                    <td class="fw-bold {% if tarefa['status'] == 'Concluída' %}text-decoration-line-through text-muted{% endif %}">
+                                        {{ tarefa['titulo'] }}
+                                    </td>
+                                    <td class="text-muted {% if tarefa['status'] == 'Concluída' %}text-decoration-line-through{% endif %}">
+                                        {{ tarefa['descricao'] or '-' }}
+                                    </td>
+                                    <td>
+                                        {% if tarefa['status'] == 'Concluída' %}
+                                            <span class="badge bg-success">Concluída</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pendente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <!-- Botão Alternar Status -->
+                                        <a href="{{ url_for('alternar_status', id=tarefa['id']) }}" class="btn btn-sm {% if tarefa['status'] == 'Concluída' %}btn-secondary{% else %}btn-success{% endif %}" title="Alterar Status">
+                                            {% if tarefa['status'] == 'Concluída' %}
+                                                <i class="fa-solid fa-rotate-left"></i> Reabrir
+                                            {% else %}
+                                                <i class="fa-solid fa-check"></i> Concluir
+                                            {% endif %}
+                                        </a>
+                                        <!-- Botão Excluir -->
+                                        <a href="{{ url_for('excluir', id=tarefa['id']) }}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');" title="Excluir">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mb-0">Nenhuma tarefa cadastrada no momento.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
